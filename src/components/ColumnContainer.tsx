@@ -1,3 +1,4 @@
+import TrashIcon from "../icons/TrashIcon";
 import { Column } from "../types"
 
 interface Props {
@@ -12,9 +13,13 @@ function ColumnContainer(props: Props) {
                     <div className="flex justify-center items-center bg-[#161C22] px-2 py-1 text-sm rounded-full">0</div>
                     {column.title}
                 </div>
-                <button>Delete</button>
+                <button 
+                onClick={deleteColumn(column.id)}
+                className="stroke-gray-500 hover:stroke-white hover:bg-[#161C22] rounded px-1 py-2">
+                    <TrashIcon />
+                </button>
             </div>
-           
+
             <div className="flex flex-grow">Content</div>
             <div className="flex ">Footer</div>
         </div>
