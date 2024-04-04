@@ -1,9 +1,9 @@
-import { useSortable } from "@dnd-kit/sortable";
+import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import TrashIcon from "../icons/TrashIcon";
 import { Column, Id, Task } from "../types";
 import { CSS } from "@dnd-kit/utilities";
 import { UniqueIdentifier } from "@dnd-kit/core";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import PlusIcon from "../icons/PlusIcon";
 import TaskCard from "./TaskCard";
 
@@ -13,12 +13,26 @@ interface Props {
   updateColumn: (id: Id, title: String) => void;
 
   createTask: (columnId: Id) => void;
+  updateTask: (id: Id, title: string) => void;
+
   deleteTask: (id: Id) => void;
   tasks: Task[];
 }
 function ColumnContainer(props: Props) {
-  const { column, deleteColumn, updateColumn, createTask, deleteTask, tasks } = props;
+  const {
+    column,
+    deleteColumn,
+    updateColumn,
+    createTask,
+    updateTask,
+    deleteTask,
+    tasks,
+  } = props;
+
   const [editMode, setEditMode] = useState(false);
+  const tasksIds = useMemo(() => {
+    return tasks.map(task => task.id)
+  }, [tasks])
 
   const {
     setNodeRef,
@@ -40,6 +54,7 @@ function ColumnContainer(props: Props) {
     transition,
     transform: CSS.Transform.toString(transform),
   };
+
   if (isDragging) {
     return (
       <div
@@ -95,13 +110,22 @@ function ColumnContainer(props: Props) {
       </div>
 
       <div className="flex flex-grow flex-col gap-4 p-2 overflow-x-hidden overflow-y-auto">
-        {tasks.map((task) => (
-            <TaskCard key={task?.id} task={task} deleteTask={deleteTask}/>
-        ))}
+        <SortableContext items={tasksIds}>
+          {tasks.map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              deleteTask={deleteTask}
+              updateTask={updateTask}
+            />
+          ))}
+        </SortableContext>
       </div>
+
+      {/*Footer */}
       <button
-        onClick={()=>{
-            createTask(column.id)
+        onClick={() => {
+          createTask(column.id);
         }}
         className="flex gap-2 items-center border-[#161C22] border-2 rounded-md p-4 border-x-[#161c22] hover:bg-[#0D1117] active:bg-black"
       >
